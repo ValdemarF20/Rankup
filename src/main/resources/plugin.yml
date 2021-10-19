@@ -1,0 +1,12 @@
+name: RankupPlugin
+version: 0.0.0-ALPHA
+main: net.valdemarf.rankupplugin.RankupPlugin
+api-version: 1.16
+commands:
+  rankup:
+    description: 'Ranks up to the next rank if the player has enough money'
+  debug:
+    description: 'Debug command'
+
+depend: [Vault, Essentials]
+

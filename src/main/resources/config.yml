@@ -1,0 +1,30 @@
+# Amount of ranks to be generated
+rank-amount: 15
+
+# Price increment per rank in multiplier
+rank-increment: 1.5
+
+# Prestige multiplier for price
+prestige-price-multiplier: 1.5
+
+# Default price for the first rank
+default-rank-price: 100
+
+# Database:
+# Type can either be "MySQL" or "SQLite"
+database-type: 'SQLites'
+database-table-name: 'data'
+
+databaselist:
+  host: 'localhost' # host of your database
+  port: 3306 # default port for MySQL
+  database: 'db' # name of your database. A database server can contain multiple databases
+  user: 'root'
+  password: ''
+
+
+# Economy:
+ecocommands:
+  - pay
+  - eco
+  - sell
