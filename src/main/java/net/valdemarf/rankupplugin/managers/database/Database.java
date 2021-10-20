@@ -1,4 +1,4 @@
-package net.valdemarf.rankupplugin.Managers.Database;
+package net.valdemarf.rankupplugin.managers.database;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

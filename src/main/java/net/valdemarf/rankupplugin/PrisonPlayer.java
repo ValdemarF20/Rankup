@@ -1,9 +1,12 @@
 package net.valdemarf.rankupplugin;
 
 import net.milkbowl.vault.economy.Economy;
-import net.valdemarf.rankupplugin.Managers.PlayerManager;
+import net.valdemarf.rankupplugin.managers.PlayerManager;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.logging.Level;
 
 public class PrisonPlayer {
     private Rank rank;
@@ -20,7 +23,6 @@ public class PrisonPlayer {
     }
 
     /* Getters */
-    public double getBalance() { return econ.getBalance(getSpigotPlayer()); }
     public Rank getRank() { return this.rank; }
     public Player getSpigotPlayer() { return this.spigotPlayer; }
     public int getPrestige() { return prestige; }
@@ -28,17 +30,11 @@ public class PrisonPlayer {
 
     /* Ranks */
     public void rankup(PlayerManager playerManager) {
-        Rank currentRank = null;
+        Rank currentRank = rank;
         Rank nextRank;
 
-        for (Rank rank : playerManager.getRanks()) {
-            if (rank.equals(this.rank)) {
-                currentRank = rank;
-                break;
-            }
-        }
         if(currentRank == null) {
-            System.out.println("Player does not have a rank");
+            Bukkit.getLogger().log(Level.INFO, "Player does not have a rank");
             return;
         }
 
@@ -64,31 +60,21 @@ public class PrisonPlayer {
 
     public void autoRankup(RankupPlugin plugin, PlayerManager playerManager) {
         if(nextRank == null) {
-            nextRank = playerManager.getRankFromIdentifer(rank.getIdentifier() + 1);
+            nextRank = playerManager.getRank(rank.getIdentifier() + 1);
         }
 
         new BukkitRunnable() {
             @Override
             public void run() {
+                if(nextRank.getPrice(playerManager.getPlayer(spigotPlayer)) >= econ.getBalance(spigotPlayer)) {
+                    this.cancel();
+                }
                 rankup(playerManager);
             }
         }.runTaskTimer(plugin, 1, 2);
     }
 
     private Rank getNextRankP(Rank currentRank, PlayerManager playerManager) {
-        boolean checker = false;
-        Rank nRank = null;
-
-        for (Rank rank : playerManager.getRanks()) {
-            if(checker) {
-                nRank = rank;
-                break;
-            }
-            if(rank.equals(currentRank)) {
-                checker = true;
-            }
-        }
-
-        return nRank;
+        return playerManager.getRanks().get(currentRank.getIdentifier() + 1);
     }
 }

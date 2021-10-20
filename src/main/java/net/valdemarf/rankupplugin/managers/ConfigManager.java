@@ -1,4 +1,4 @@
-package net.valdemarf.rankupplugin.Managers;
+package net.valdemarf.rankupplugin.managers;
 
 import net.valdemarf.rankupplugin.RankupPlugin;
 

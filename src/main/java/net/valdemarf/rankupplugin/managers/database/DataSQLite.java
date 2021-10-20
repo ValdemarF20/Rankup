@@ -1,8 +1,8 @@
-package net.valdemarf.rankupplugin.Managers.Database;
+package net.valdemarf.rankupplugin.managers.database;
 
-import net.valdemarf.rankupplugin.Managers.ConfigManager;
 import net.valdemarf.rankupplugin.PrisonPlayer;
 import net.valdemarf.rankupplugin.RankupPlugin;
+import net.valdemarf.rankupplugin.managers.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -13,21 +13,21 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
-
-import static net.valdemarf.rankupplugin.RankupPlugin.DATABASE_PATH;
+import java.util.logging.Level;
 
 public class DataSQLite implements Database{
     private static Connection connection;
 
     private final RankupPlugin rankupPlugin;
+    private final PlayerManager playerManager;
 
     public DataSQLite(RankupPlugin rankupPlugin) {
         this.rankupPlugin = rankupPlugin;
-        ConfigManager configManager = rankupPlugin.getConfigManager();
+        playerManager = rankupPlugin.getPlayerManager();
     }
     @Override
     public void initialize() {
-        if (!Files.exists(Paths.get(DATABASE_PATH))) {
+        if (!Files.exists(Paths.get(rankupPlugin.databasePath))) {
             try {
                 openConnection();
 
@@ -36,16 +36,16 @@ public class DataSQLite implements Database{
                                 "` (`uuid` VARCHAR(36), `rank` INTEGER, `prestige` INTEGER)");
                 statement.execute();
                 statement.close();
-                Bukkit.getLogger().info("SQLite file created");
+                rankupPlugin.getLogger().info("SQLite file created");
             } catch (SQLException e) {
-                Bukkit.getLogger().severe("Something went wrong while creating the SQLite file");
-                e.printStackTrace();
+                rankupPlugin.getLogger().severe("Something went wrong while creating the SQLite file");
+                rankupPlugin.getLogger().log(Level.SEVERE, "", e);
             }
         } else {
             try {
                 openConnection();
             } catch (SQLException e) {
-                e.printStackTrace();
+                rankupPlugin.getLogger().log(Level.SEVERE, "", e);
             }
         }
     }
@@ -53,10 +53,10 @@ public class DataSQLite implements Database{
     @Override
     public void openConnection() throws SQLException {
         try {
-            connection = DriverManager.getConnection("jdbc:sqlite:" + DATABASE_PATH);
-            System.out.println("Connection to database success!");
+            connection = DriverManager.getConnection("jdbc:sqlite:" + rankupPlugin.databasePath);
+            rankupPlugin.getLogger().log(Level.INFO, "Connection to database success!");
         } catch(Exception e) {
-            e.printStackTrace();
+            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
         }
     }
 
@@ -66,7 +66,7 @@ public class DataSQLite implements Database{
         try {
             ps = connection.prepareStatement(query);
         } catch(SQLException e) {
-            e.printStackTrace();
+            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
         }
         return ps;
     }
@@ -74,9 +74,9 @@ public class DataSQLite implements Database{
     @Override
     public void createPlayer(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
-        PrisonPlayer pPlayer = rankupPlugin.playerManager.getPlayer(player);
+        PrisonPlayer pPlayer = playerManager.getPlayer(player);
         if(pPlayer == null) {
-            pPlayer = new PrisonPlayer(rankupPlugin.playerManager.getRanks().get(0), 1, player);
+            pPlayer = new PrisonPlayer(playerManager.getRanks().get(0), 1, player);
         }
 
         try {
@@ -86,7 +86,7 @@ public class DataSQLite implements Database{
             ps2.setInt(3, pPlayer.getPrestige());
             ps2.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
         }
     }
 
@@ -100,7 +100,7 @@ public class DataSQLite implements Database{
             updateData(uuid);
 
         } catch(SQLException e) {
-            e.printStackTrace();
+            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
         }
     }
 
@@ -124,7 +124,7 @@ public class DataSQLite implements Database{
             objects.add(rankIdentifier);
             objects.add(prestige);
         } catch (SQLException e) {
-            e.printStackTrace();
+            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
         }
         return objects;
     }
@@ -146,14 +146,14 @@ public class DataSQLite implements Database{
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
         }
         return uuids;
     }
 
     /* Private Methods */
     private void updateData(UUID uuid) {
-        PrisonPlayer pPlayer = rankupPlugin.playerManager.getPlayer(Bukkit.getPlayer(uuid));
+        PrisonPlayer pPlayer = playerManager.getPlayer(Bukkit.getPlayer(uuid));
 
         try {
             PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM `" + RankupPlugin.tableName + "` WHERE uuid = ?;");
@@ -175,7 +175,7 @@ public class DataSQLite implements Database{
             }
 
         } catch(SQLException e) {
-            e.printStackTrace();
+            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
         }
     }
 }

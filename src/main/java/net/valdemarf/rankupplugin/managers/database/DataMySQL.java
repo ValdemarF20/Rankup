@@ -1,16 +1,19 @@
-package net.valdemarf.rankupplugin.Managers.Database;
+package net.valdemarf.rankupplugin.managers.database;
 
-import net.valdemarf.rankupplugin.Managers.ConfigManager;
+import net.valdemarf.rankupplugin.managers.ConfigManager;
 import net.valdemarf.rankupplugin.PrisonPlayer;
 import net.valdemarf.rankupplugin.RankupPlugin;
+import net.valdemarf.rankupplugin.managers.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class DataMySQL implements Database {
 
@@ -19,9 +22,11 @@ public class DataMySQL implements Database {
 
     private final RankupPlugin rankupPlugin;
     private static Connection connection;
+    private final PlayerManager playerManager;
 
     public DataMySQL(RankupPlugin rankupPlugin) {
         this.rankupPlugin = rankupPlugin;
+        playerManager = rankupPlugin.getPlayerManager();
     }
 
     @Override
@@ -37,14 +42,14 @@ public class DataMySQL implements Database {
 
         try{
             openConnection();
-            System.out.println("Database connection succeeded");
+            Bukkit.getLogger().log(Level.INFO, "Database connection succeeded");
 
             rankupPlugin.getDatabase().prepareStatement(
                     "CREATE TABLE IF NOT EXISTS `"
                             + RankupPlugin.tableName
                             + "` (`uuid` VARCHAR(36), `rank` INTEGER, `prestige` INTEGER)").executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
         }
     }
 
@@ -66,16 +71,16 @@ public class DataMySQL implements Database {
         try {
             ps = connection.prepareStatement(query);
         } catch(SQLException e) {
-            e.printStackTrace();
+            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
         }
         return ps;
     }
     @Override
     public void createPlayer(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
-        PrisonPlayer pPlayer = rankupPlugin.playerManager.getPlayer(player);
+        PrisonPlayer pPlayer = playerManager.getPlayer(player);
         if(pPlayer == null) {
-            pPlayer = new PrisonPlayer(rankupPlugin.playerManager.getRanks().get(0), 1, player);
+            pPlayer = new PrisonPlayer(playerManager.getRanks().get(0), 1, player);
         }
 
         try {
@@ -85,7 +90,7 @@ public class DataMySQL implements Database {
             ps2.setInt(3, pPlayer.getPrestige());
             ps2.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
         }
     }
 
@@ -99,7 +104,7 @@ public class DataMySQL implements Database {
             updateData(uuid);
 
         } catch(SQLException e) {
-            e.printStackTrace();
+            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
         }
     }
 
@@ -124,7 +129,7 @@ public class DataMySQL implements Database {
                 objects.add(prestige);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
         }
         return objects;
     }
@@ -147,14 +152,14 @@ public class DataMySQL implements Database {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
         }
         return uuids;
     }
 
     /* Private Methods */
     private void updateData(UUID uuid) {
-        PrisonPlayer pPlayer = rankupPlugin.playerManager.getPlayer(Bukkit.getPlayer(uuid));
+        PrisonPlayer pPlayer = playerManager.getPlayer(Bukkit.getPlayer(uuid));
 
         try {
             PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM `" + RankupPlugin.tableName + "` WHERE uuid = ?;");
@@ -176,7 +181,7 @@ public class DataMySQL implements Database {
             }
 
         } catch(SQLException e) {
-            e.printStackTrace();
+            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
         }
     }
 }

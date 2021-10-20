@@ -1,7 +1,7 @@
-package net.valdemarf.rankupplugin.Events;
+package net.valdemarf.rankupplugin.events;
 
-import net.valdemarf.rankupplugin.Managers.Database.Database;
-import net.valdemarf.rankupplugin.Managers.PlayerManager;
+import net.valdemarf.rankupplugin.managers.database.Database;
+import net.valdemarf.rankupplugin.managers.PlayerManager;
 import net.valdemarf.rankupplugin.PrisonPlayer;
 import net.valdemarf.rankupplugin.Rank;
 import net.valdemarf.rankupplugin.RankupPlugin;
@@ -32,15 +32,9 @@ public class PlayerJoinListener implements Listener {
 
 
         List<Integer> objects = database.getPlayerData(uuid);
-        if(objects.size() == 0) {
-            database.createPlayer(uuid);
-        }
-        Rank newRank = null;
-        for (Rank rank : playerManager.getRanks()) {
-            if(rank.getIdentifier() == objects.get(0)) {
-                newRank = rank;   
-            }
-        }
+
+        Rank newRank = playerManager.getRank(objects.get(0));
+
         if(newRank == null) {
             newRank = new Rank(0, "1", RankupPlugin.startRankCost);
         }

@@ -1,10 +1,10 @@
-package net.valdemarf.rankupplugin.GUI;
+package net.valdemarf.rankupplugin.gui;
 
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import net.kyori.adventure.text.Component;
-import net.valdemarf.rankupplugin.Managers.PlayerManager;
+import net.valdemarf.rankupplugin.managers.PlayerManager;
 import net.valdemarf.rankupplugin.PrisonPlayer;
 import net.valdemarf.rankupplugin.Rank;
 import org.bukkit.Material;
@@ -31,7 +31,7 @@ public class Menu {
                 .create();
 
         // Create the items
-        for (Rank rank : playerManager.getRanks()) {
+        for (Rank rank : playerManager.getRanks().values()) {
             ItemStack item;
 
             if(rank.equals(player.getRank())) {

@@ -1,22 +1,25 @@
-package net.valdemarf.rankupplugin.Managers;
+package net.valdemarf.rankupplugin.managers;
 
-import net.valdemarf.rankupplugin.GUI.Menu;
+import net.valdemarf.rankupplugin.RankupPlugin;
+import net.valdemarf.rankupplugin.gui.Menu;
 import net.valdemarf.rankupplugin.PrisonPlayer;
 import net.valdemarf.rankupplugin.Rank;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class PlayerManager {
-    public List<Rank> ranks = new ArrayList<>();
-    public HashMap<UUID, PrisonPlayer> onlinePlayers = new HashMap<>();
-    public HashSet<UUID> totalPlayers = new HashSet<>();
+    public final Map<Integer, Rank> ranks = new HashMap<>(RankupPlugin.rankAmount);
+    public Map<UUID, PrisonPlayer> onlinePlayers = new HashMap<>();
+    public Set<UUID> totalPlayers = new HashSet<>();
 
     public Menu menu;
 
     /* Rank configuration */
-    public List<Rank> getRanks() { return ranks; }
-    public void addRank(Rank rank) { ranks.add(rank); }
+    public Map<Integer, Rank> getRanks() { return ranks; }
+    public void addRank(Rank rank) { ranks.putIfAbsent(ranks.size(), rank); }
 
     /* Player Configuration */
     public PrisonPlayer getPlayer(Player spigotPlayer) {
@@ -25,12 +28,12 @@ public class PlayerManager {
                 return player;
             }
         }
-        System.out.println("There are no players stored with that UUID");
+        Bukkit.getLogger().log(Level.WARNING, "There are no players stored with that UUID");
         return null;
     }
 
-    public HashMap<UUID, PrisonPlayer> getOnlinePlayers() { return onlinePlayers; }
-    public HashSet<UUID> getTotalPlayers() { return totalPlayers; }
+    public Map<UUID, PrisonPlayer> getOnlinePlayers() { return onlinePlayers; }
+    public Set<UUID> getTotalPlayers() { return totalPlayers; }
     public void setTotalPlayers(HashSet<UUID> uuids) { this.totalPlayers = uuids; }
 
     public void addPlayer(UUID uuid, PrisonPlayer player) {
@@ -45,7 +48,7 @@ public class PlayerManager {
         if(onlinePlayers.containsKey(uuid)) {
             onlinePlayers.remove(uuid);
         } else {
-            System.out.println("Player is not online");
+            Bukkit.getLogger().log(Level.WARNING, "Player is not online");
         }
     }
 
@@ -70,12 +73,8 @@ public class PlayerManager {
         }
     }
 
-    public Rank getRankFromIdentifer(int identifier) {
-        for (Rank rank : ranks) {
-            if(rank.getIdentifier() == identifier) {
-                return rank;
-            }
-        }
+    public Rank getRank(int identifier) {
+        ranks.get(identifier);
         return null;
     }
 }

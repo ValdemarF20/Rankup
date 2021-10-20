@@ -1,6 +1,6 @@
-package net.valdemarf.rankupplugin.Commands;
+package net.valdemarf.rankupplugin.commands;
 
-import net.valdemarf.rankupplugin.Managers.ConfigManager;
+import net.valdemarf.rankupplugin.managers.ConfigManager;
 import net.valdemarf.rankupplugin.RankupPlugin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,7 +20,7 @@ public class PaymentCommand implements Listener {
 
         for (String command : configManager.getList("ecocommands")) {
             if(e.getMessage().contains(command)) {
-                rankupPlugin.playerManager.getPlayer(player).autoRankup(rankupPlugin, rankupPlugin.playerManager);
+                rankupPlugin.getPlayerManager().getPlayer(player).autoRankup(rankupPlugin, rankupPlugin.getPlayerManager());
             }
         }
     }

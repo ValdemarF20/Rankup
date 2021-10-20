@@ -1,9 +1,8 @@
-package net.valdemarf.rankupplugin.Commands;
+package net.valdemarf.rankupplugin.commands;
 
-import net.valdemarf.rankupplugin.GUI.Menu;
-import net.valdemarf.rankupplugin.Managers.PlayerManager;
+import net.valdemarf.rankupplugin.gui.Menu;
+import net.valdemarf.rankupplugin.managers.PlayerManager;
 import net.valdemarf.rankupplugin.PrisonPlayer;
-import net.valdemarf.rankupplugin.Rank;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
