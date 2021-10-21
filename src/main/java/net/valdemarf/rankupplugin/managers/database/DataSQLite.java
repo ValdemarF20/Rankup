@@ -2,9 +2,12 @@ package net.valdemarf.rankupplugin.managers.database;
 
 import net.valdemarf.rankupplugin.PrisonPlayer;
 import net.valdemarf.rankupplugin.RankupPlugin;
+import net.valdemarf.rankupplugin.commands.DebugCommand;
 import net.valdemarf.rankupplugin.managers.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -13,13 +16,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class DataSQLite implements Database{
     private static Connection connection;
 
     private final RankupPlugin rankupPlugin;
     private final PlayerManager playerManager;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataSQLite.class);
 
     public DataSQLite(RankupPlugin rankupPlugin) {
         this.rankupPlugin = rankupPlugin;
@@ -36,16 +40,16 @@ public class DataSQLite implements Database{
                                 "` (`uuid` VARCHAR(36), `rank` INTEGER, `prestige` INTEGER)");
                 statement.execute();
                 statement.close();
-                rankupPlugin.getLogger().info("SQLite file created");
+                LOGGER.info("SQLite file created");
             } catch (SQLException e) {
-                rankupPlugin.getLogger().severe("Something went wrong while creating the SQLite file");
-                rankupPlugin.getLogger().log(Level.SEVERE, "", e);
+                LOGGER.error("Something went wrong while creating the SQLite file");
+                LOGGER.error("", e);
             }
         } else {
             try {
                 openConnection();
             } catch (SQLException e) {
-                rankupPlugin.getLogger().log(Level.SEVERE, "", e);
+                LOGGER.error("", e);
             }
         }
     }
@@ -54,9 +58,9 @@ public class DataSQLite implements Database{
     public void openConnection() throws SQLException {
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:" + rankupPlugin.databasePath);
-            rankupPlugin.getLogger().log(Level.INFO, "Connection to database success!");
+            LOGGER.info("Connection to database success!");
         } catch(Exception e) {
-            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
+            LOGGER.error("", e);
         }
     }
 
@@ -66,7 +70,7 @@ public class DataSQLite implements Database{
         try {
             ps = connection.prepareStatement(query);
         } catch(SQLException e) {
-            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
+            LOGGER.error("", e);
         }
         return ps;
     }
@@ -86,7 +90,7 @@ public class DataSQLite implements Database{
             ps2.setInt(3, pPlayer.getPrestige());
             ps2.executeUpdate();
         } catch (SQLException e) {
-            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
+            LOGGER.error("", e);
         }
     }
 
@@ -100,7 +104,7 @@ public class DataSQLite implements Database{
             updateData(uuid);
 
         } catch(SQLException e) {
-            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
+            LOGGER.error("", e);
         }
     }
 
@@ -124,7 +128,7 @@ public class DataSQLite implements Database{
             objects.add(rankIdentifier);
             objects.add(prestige);
         } catch (SQLException e) {
-            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
+            LOGGER.error("", e);
         }
         return objects;
     }
@@ -146,7 +150,7 @@ public class DataSQLite implements Database{
                 }
             }
         } catch (SQLException e) {
-            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
+            LOGGER.error("", e);
         }
         return uuids;
     }
@@ -175,7 +179,7 @@ public class DataSQLite implements Database{
             }
 
         } catch(SQLException e) {
-            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
+            LOGGER.error("", e);
         }
     }
 }

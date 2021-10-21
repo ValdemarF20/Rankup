@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 public class PaymentCommand implements Listener {
     private final RankupPlugin rankupPlugin;
     private final ConfigManager configManager;
+
     public PaymentCommand(RankupPlugin rankupPlugin) {
         this.rankupPlugin = rankupPlugin;
         configManager = rankupPlugin.getConfigManager();

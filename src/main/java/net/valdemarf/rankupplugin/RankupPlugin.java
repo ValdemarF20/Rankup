@@ -12,21 +12,23 @@ import net.valdemarf.rankupplugin.managers.database.DataMySQL;
 import net.valdemarf.rankupplugin.managers.database.DataSQLite;
 import net.valdemarf.rankupplugin.managers.database.Database;
 import net.valdemarf.rankupplugin.managers.PlayerManager;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.sql.SQLException;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public final class RankupPlugin extends JavaPlugin {
     private final PlayerManager playerManager = new PlayerManager();
     private final Menu menu = new Menu(playerManager);
     private final ConfigManager configManager = new ConfigManager(this);
     private Database database;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RankupPlugin.class);
 
     public static int rankAmount;
     public static double startRankCost;
@@ -51,7 +53,7 @@ public final class RankupPlugin extends JavaPlugin {
         setupServer();
 
         if (!setupEconomy() ) {
-            Bukkit.getLogger().log(Level.SEVERE,
+            LOGGER.error(
                     String.format("[%s] - Disabled due to no Vault dependency found!",
                     getDescription().getName()));
             getServer().getPluginManager().disablePlugin(this);
@@ -91,14 +93,14 @@ public final class RankupPlugin extends JavaPlugin {
     private void setupServer() {
         /* Setup of Database management */
         databasePath = getDataFolder().getAbsolutePath() + File.separator + configManager.getString("databaselist.database") + ".db";
-        Bukkit.getLogger().log(Level.INFO, databasePath);
+        LOGGER.info(databasePath);
 
         if(configManager.getString("database-type").equalsIgnoreCase("mysql")) {
-            Bukkit.getLogger().log(Level.INFO, "MYSQL database has been chose in Config.yml \n\n");
+            LOGGER.info("MYSQL database has been chose in Config.yml \n\n");
             database = new DataMySQL(this);
         } else {
             database = new DataSQLite(this);
-            Bukkit.getLogger().log(Level.INFO, "SQLite database has been chose in Config.yml \n\n");
+            LOGGER.info("SQLite database has been chose in Config.yml \n\n");
         }
         database.initialize();
 
@@ -109,7 +111,7 @@ public final class RankupPlugin extends JavaPlugin {
 
     private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
-            Bukkit.getLogger().log(Level.SEVERE, "Vault is null");
+            LOGGER.error("Vault is null");
             return false;
         }
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
@@ -146,7 +148,7 @@ public final class RankupPlugin extends JavaPlugin {
             try {
                 database.updatePlayerData(uuid);
             } catch (SQLException e) {
-                this.getLogger().log(Level.SEVERE, "", e);
+                LOGGER.error("", e);
             }
         }
     }

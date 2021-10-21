@@ -2,11 +2,10 @@ package net.valdemarf.rankupplugin;
 
 import net.milkbowl.vault.economy.Economy;
 import net.valdemarf.rankupplugin.managers.PlayerManager;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.logging.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PrisonPlayer {
     private Rank rank;
@@ -15,6 +14,8 @@ public class PrisonPlayer {
     private int prestige = 1;
 
     private final Economy econ = RankupPlugin.getEcon();
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PrisonPlayer.class);
 
     public PrisonPlayer(Rank rank, int prestige, Player spigotPlayer) {
         this.rank = rank;
@@ -34,7 +35,7 @@ public class PrisonPlayer {
         Rank nextRank;
 
         if(currentRank == null) {
-            Bukkit.getLogger().log(Level.INFO, "Player does not have a rank");
+            LOGGER.info( "Player does not have a rank");
             return;
         }
 

@@ -6,7 +6,8 @@ import net.valdemarf.rankupplugin.RankupPlugin;
 import net.valdemarf.rankupplugin.managers.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ public class DataMySQL implements Database {
     private final RankupPlugin rankupPlugin;
     private static Connection connection;
     private final PlayerManager playerManager;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataMySQL.class);
 
     public DataMySQL(RankupPlugin rankupPlugin) {
         this.rankupPlugin = rankupPlugin;
@@ -42,14 +45,14 @@ public class DataMySQL implements Database {
 
         try{
             openConnection();
-            Bukkit.getLogger().log(Level.INFO, "Database connection succeeded");
+            LOGGER.info("Database connection succeeded");
 
             rankupPlugin.getDatabase().prepareStatement(
                     "CREATE TABLE IF NOT EXISTS `"
                             + RankupPlugin.tableName
                             + "` (`uuid` VARCHAR(36), `rank` INTEGER, `prestige` INTEGER)").executeUpdate();
         } catch (SQLException e) {
-            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
+            LOGGER.error("", e);
         }
     }
 
@@ -71,7 +74,7 @@ public class DataMySQL implements Database {
         try {
             ps = connection.prepareStatement(query);
         } catch(SQLException e) {
-            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
+            LOGGER.error("", e);
         }
         return ps;
     }
@@ -90,7 +93,7 @@ public class DataMySQL implements Database {
             ps2.setInt(3, pPlayer.getPrestige());
             ps2.executeUpdate();
         } catch (SQLException e) {
-            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
+            LOGGER.error("", e);
         }
     }
 
@@ -104,7 +107,7 @@ public class DataMySQL implements Database {
             updateData(uuid);
 
         } catch(SQLException e) {
-            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
+            LOGGER.error("", e);
         }
     }
 
@@ -129,7 +132,7 @@ public class DataMySQL implements Database {
                 objects.add(prestige);
             }
         } catch (SQLException e) {
-            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
+            LOGGER.error("", e);
         }
         return objects;
     }
@@ -152,7 +155,7 @@ public class DataMySQL implements Database {
                 }
             }
         } catch (SQLException e) {
-            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
+            LOGGER.error( "", e);
         }
         return uuids;
     }
@@ -181,7 +184,7 @@ public class DataMySQL implements Database {
             }
 
         } catch(SQLException e) {
-            rankupPlugin.getLogger().log(Level.SEVERE, "", e);
+            LOGGER.error("", e);
         }
     }
 }

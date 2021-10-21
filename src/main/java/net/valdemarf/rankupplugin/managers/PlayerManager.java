@@ -4,18 +4,21 @@ import net.valdemarf.rankupplugin.RankupPlugin;
 import net.valdemarf.rankupplugin.gui.Menu;
 import net.valdemarf.rankupplugin.PrisonPlayer;
 import net.valdemarf.rankupplugin.Rank;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.logging.Level;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerManager {
     public final Map<Integer, Rank> ranks = new HashMap<>(RankupPlugin.rankAmount);
-    public Map<UUID, PrisonPlayer> onlinePlayers = new HashMap<>();
+    public Map<UUID, PrisonPlayer> onlinePlayers = new ConcurrentHashMap<>();
     public Set<UUID> totalPlayers = new HashSet<>();
 
     public Menu menu;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlayerManager.class);
 
     /* Rank configuration */
     public Map<Integer, Rank> getRanks() { return ranks; }
@@ -28,7 +31,7 @@ public class PlayerManager {
                 return player;
             }
         }
-        Bukkit.getLogger().log(Level.WARNING, "There are no players stored with that UUID");
+        LOGGER.warn("There are no players stored with that UUID");
         return null;
     }
 
@@ -48,7 +51,7 @@ public class PlayerManager {
         if(onlinePlayers.containsKey(uuid)) {
             onlinePlayers.remove(uuid);
         } else {
-            Bukkit.getLogger().log(Level.WARNING, "Player is not online");
+            LOGGER.warn("Player is not online");
         }
     }
 
